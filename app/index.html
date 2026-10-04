@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VigilantCore App | Security Probe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #e2e8f0; }
+        .sidebar { width: 260px; background: #1e293b; height: 100vh; position: fixed; left: 0; top: 0; }
+        .main-content { margin-left: 260px; padding: 2rem; min-height: 100vh; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 1rem; }
+        .status-pill { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+        .status-green { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+        .status-red { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .status-yellow { background: rgba(234, 179, 8, 0.2); color: #facc15; }
+        .loader { border: 3px solid #334155; border-top: 3px solid #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar flex flex-col p-6">
+        <div class="flex items-center gap-3 mb-10 px-2">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">V</div>
+            <span class="text-lg font-bold tracking-tight">VigilantCore</span>
+        </div>
+        
+        <nav class="flex-1 space-y-2">
+            <a href="#" class="flex items-center gap-3 p-3 rounded-lg bg-blue-600 text-white font-medium transition">
+                <i class="fas fa-search w-5"></i> Scan
+            </a>
+            <a href="#" class="flex items-center gap-3 p-3 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                <i class="fas fa-list-ul w-5"></i> Monitors
+            </a>
+            <a href="#" class="flex items-center gap-3 p-3 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                <i class="fas fa-cog w-5"></i> Settings
+            </a>
+        </nav>
+        
+        <div class="mt-auto p-4 glass rounded-xl text-xs text-slate-500 border border-slate-700">
+            v1.3.0-stable
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="flex justify-between items-center mb-10">
+            <h1 class="text-2xl font-bold">Domain Discovery</h1>
+            <div class="flex items-center gap-4">
+                <span class="text-sm text-slate-400">API Status: <span id="api-status" class="text-yellow-500">Connecting...</span></span>
+            </div>
+        </header>
+
+        <!-- Search Area -->
+        <div class="max-w-3xl mb-12">
+            <div class="flex gap-3">
+                <input id="domain-input" type="text" placeholder="Enter domain or subdomain (e.g. google.com)" 
+                       class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-6 py-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                <button id="scan-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold transition flex items-center gap-2">
+                    <span id="btn-text">Run Scan</span>
+                    <div id="btn-loader" class="loader hidden"></div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Area -->
+        <div id="results-container" class="hidden space-y-8 animate-in fade-in duration-500">
+            
+            <!-- Verdict Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="card p-6 flex flex-col items-center justify-center text-center">
+                    <span class="text-slate-400 text-sm mb-2">Security Score</span>
+                    <div id="res-score" class="text-5xl font-black text-blue-500">0</div>
+                </div>
+                <div class="card p-6 flex flex-col items-center justify-center text-center">
+                    <span class="text-slate-400 text-sm mb-2">Final Verdict</span>
+                    <div id="res-verdict" class="text-2xl font-bold">Unknown</div>
+                </div>
+                <div class="card p-6 flex flex-col items-center justify-center text-center">
+                    <span class="text-slate-400 text-sm mb-2">Domain</span>
+                    <div id="res-domain" class="text-xl font-medium truncate max-w-full">---</div>
+                </div>
+            </div>
+
+            <!-- Detailed Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- TLS Panel -->
+                <div class="card p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold flex items-center gap-2"><i class="fas fa-lock text-blue-500"></i> TLS / SSL</h3>
+                        <span id="tls-status" class="status-pill">Unknown</span>
+                    </div>
+                    <div id="tls-details" class="space-y-2 text-sm text-slate-300"></div>
+                </div>
+
+                <!-- DNS Panel -->
+                <div class="card p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold flex items-center gap-2"><i class="fas fa-network-wired text-purple-500"></i> DNS Records</h3>
+                        <span id="dns-status" class="status-pill">Unknown</span>
+                    </div>
+                    <div id="dns-details" class="space-y-2 text-sm text-slate-300"></div>
+                </div>
+
+                <!-- HTTP Panel -->
+                <div class="card p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold flex items-center gap-2"><i class="fas fa-globe text-green-500"></i> HTTP / HSTS</h3>
+                        <span id="http-status" class="status-pill">Unknown</span>
+                    </div>
+                    <div id="http-details" class="space-y-2 text-sm text-slate-300"></div>
+                </div>
+
+                <!-- Registration Panel -->
+                <div class="card p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold flex items-center gap-2"><i class="fas fa-id-card text-yellow-500"></i> RDAP / Registration</h3>
+                        <span id="rdap-status" class="status-pill">Unknown</span>
+                    </div>
+                    <div id="rdap-details" class="space-y-2 text-sm text-slate-300"></div>
+                </div>
+            </div>
+
+            <!-- CT Logs -->
+            <div class="card p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold flex items-center gap-2"><i class="fas fa-certificate text-cyan-500"></i> Certificate Transparency</h3>
+                    <span id="ct-status" class="status-pill">Unknown</span>
+                </div>
+                <div id="ct-details" class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead>
+                            <tr class="border-b border-slate-700 text-slate-500">
+                                <th class="pb-2">Common Name</th>
+                                <th class="pb-2">Issuer</th>
+                                <th class="pb-2">Expiry</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ct-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8000"; // Change to deployed URL
+
+        async function checkApi() {
+            try {
+                const res = await fetch(API_BASE + "/");
+                if (res.ok) {
+                    document.getElementById('api-status').innerText = "Connected";
+                    document.getElementById('api-status').className = "text-green-500";
+                }
+            } catch (e) {
+                document.getElementById('api-status').innerText = "Offline";
+                document.getElementById('api-status').className = "text-red-500";
+            }
+        }
+        checkApi();
+
+        const scanBtn = document.getElementById('scan-btn');
+        const domainInput = document.getElementById('domain-input');
+        const btnText = document.getElementById('btn-text');
+        const btnLoader = document.getElementById('btn-loader');
+        const resultsContainer = document.getElementById('results-container');
+
+        scanBtn.onclick = async () => {
+            const domain = domainInput.value.trim();
+            if (!domain) return alert("Please enter a domain");
+
+            btnText.classList.add('hidden');
+            btnLoader.classList.remove('hidden');
+            resultsContainer.classList.add('hidden');
+
+            try {
+                const response = await fetch(`${API_BASE}/probe?domain=${domain}`);
+                if (!response.ok) throw new Error("API Error");
+                const data = await response.json();
+
+                // 1. Main Stats
+                document.getElementById('res-score').innerText = data.score;
+                document.getElementById('res-verdict').innerText = data.verdict;
+                document.getElementById('res-domain').innerText = data.domain;
+
+                // 2. TLS
+                const tls = data.analysis.tls;
+                document.getElementById('tls-status').innerText = tls.versions['TLSv1.3'] === 'Supported' ? 'Modern' : 'Outdated';
+                document.getElementById('tls-status').className = "status-pill " + (tls.versions['TLSv1.3'] === 'Supported' ? "status-green" : "status-yellow");
+                let tlsHtml = "";
+                for(let [v, s] of Object.entries(tls.versions)) {
+                    tlsHtml += `<div class="flex justify-between"><span>${v}</span><span class="${s === 'Supported' ? 'text-green-400' : 'text-red-400'}">${s}</span></div>`;
+                }
+                document.getElementById('tls-details').innerHTML = tlsHtml;
+
+                // 3. DNS
+                const dns = data.analysis.dns.records;
+                document.getElementById('dns-status').innerText = "Active";
+                document.getElementById('dns-status').className = "status-pill status-green";
+                let dnsHtml = "";
+                for(let [type, vals] of Object.entries(dns)) {
+                    dnsHtml += `<div class="flex justify-between"><span>${type}</span><span class="truncate ml-4">${vals.join(', ')}</span></div>`;
+                }
+                document.getElementById('dns-details').innerHTML = dnsHtml;
+
+                // 4. HTTP
+                const http = data.analysis.http;
+                document.getElementById('http-status').innerText = http.status_code === 200 ? "Healthy" : "Issue";
+                document.getElementById('http-status').className = "status-pill " + (http.status_code === 200 ? "status-green" : "status-red");
+                let httpHtml = `<div class="flex justify-between"><span>Status</span><span>${http.status_code}</span></div>`;
+                httpHtml += `<div class="flex justify-between"><span>Latency</span><span>${http.latency.toFixed(3)}s</span></div>`;
+                let missing = http.missing_headers.join(', ');
+                httpHtml += `<div class="mt-2 text-xs text-red-400">Missing: ${missing || 'None'}</div>`;
+                document.getElementById('http-details').innerHTML = httpHtml;
+
+                // 5. RDAP
+                const rdap = data.analysis.rdap;
+                document.getElementById('rdap-status').innerText = rdap.error ? "Error" : "Valid";
+                document.getElementById('rdap-status').className = "status-pill " + (rdap.error ? "status-red" : "status-green");
+                document.getElementById('rdap-details').innerHTML = rdap.error ? `<div class="text-red-400">${rdap.error}</div>` : 
+                    `<div class="flex justify-between"><span>Registrar</span><span>${rdap.registrar}</span></div>
+                     <div class="flex justify-between"><span>Expiry</span><span>${rdap.expiry_date}</span></div>`;
+
+                // 6. CT Logs
+                const ct = data.analysis.ct;
+                document.getElementById('ct-status').innerText = ct.certificates.length > 0 ? "Found" : "Empty";
+                document.getElementById('ct-status').className = "status-pill " + (ct.certificates.length > 0 ? "status-green" : "status-yellow");
+                let ctHtml = "";
+                ct.certificates.forEach(c => {
+                    ctHtml += `<tr><td class="py-2">${c.common_name}</td><td>${c.issuer}</td><td>${c.expiry}</td></tr>`;
+                });
+                document.getElementById('ct-table-body').innerHTML = ctHtml || '<tr><td colspan="3" class="py-4 text-center text-slate-500">No certificates found</td></tr>';
+
+                resultsContainer.classList.remove('hidden');
+            } catch (e) {
+                alert("Could not connect to API. Please ensure the server is running.");
+            } finally {
+                btnText.classList.remove('hidden');
+                btnLoader.classList.add('hidden');
+            }
+        };
+    </script>
+</body>
+</html>
