@@ -1,0 +1,55 @@
+vigilant-core tells you what a domain or subdomain really exposes, and reminds you
+before something you rely on expires. It is built for people who maintain a
+personal site, a side project, or a homelab service, and for operators who need a
+lightweight way to keep an eye on a small set of sites.
+
+There is no vigilant-core account and no vigilant-core backend. Everything runs from
+your device.
+
+ENTER A DOMAIN AND SEE WHAT IT HIDES
+
+* Registration expiry, registrar, status codes and nameservers, via RDAP
+* The TLS certificate leaf AND the full chain the server actually presents
+* DNS records — A, AAAA, MX, NS, TXT, CAA
+* Email authentication — SPF, DMARC and DKIM
+* Certificate Transparency entries, plus passively discovered subdomains
+* HTTP status, redirect chain and HSTS
+
+vigilant-core reads the certificate chain from the live TLS handshake rather than
+from a high-level HTTP client, so it can tell you when a server is serving a leaf
+certificate whose intermediate is missing or expired — a real cause of
+intermittent failures that most checkers miss.
+
+EXPIRY REMINDERS, SCHEDULED ON YOUR DEVICE
+
+When vigilant-core finds a registration or certificate expiry, it schedules local
+notifications 30, 14, 7 and 1 day ahead. Those reminders are scheduled on your
+iPhone, so they arrive even if you never open the app again. Nothing is scheduled
+on a server, because there is no server.
+
+WATCH WHAT YOU DEPEND ON
+
+Add a domain, a TCP host and port, or an HTTP endpoint with a body assertion, and
+vigilant-core keeps the last check, its provider, and whether the result is stale
+visible on the monitor's detail screen — so "is this actually being checked?" is
+always answerable at a glance. On iOS, discovery and checks run while the app is
+open; continuous background monitoring that pages you the moment something breaks
+is an Android feature in this release.
+
+PRIVACY AND NETWORK USE
+
+vigilant-core itself does not store your data on a server. A scan is not offline,
+though: the domain you choose is sent to the public lookup services that answer
+the question — RDAP, DNS-over-HTTPS, and Certificate Transparency. Those services
+see the domain you queried, and some publish their query logs. Review their
+policies before scanning a domain whose existence you need to keep private.
+
+No account. No analytics. No advertising. No tracking SDKs. Monitors, reports and
+settings stay in private storage on your device, and deleting the app deletes
+them.
+
+FREE AND OPEN SOURCE
+
+vigilant-core is free software under the GNU General Public License, version 3 or
+later. The full source is published, so you can audit exactly what it sends, build
+it yourself, or help improve it.

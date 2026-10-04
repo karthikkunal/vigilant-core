@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	  Watchtower's privacy manifest.
+
+	  The Flutter engine ships its own manifest inside Flutter.framework, which
+	  already declares FileTimestamp (0A2A.1, C617.1) and SystemBootTime (35F9.1)
+	  for the Dart runtime. This file covers only what Watchtower itself and its
+	  statically linked plugins add on top of that.
+
+	  UserDefaults / CA92.1 is required here because flutter_foreground_task reads
+	  and writes UserDefaults.standard throughout its iOS implementation
+	  (ForegroundTaskOptions, ForegroundTaskData, NotificationContent,
+	  NotificationOptions, BackgroundServiceStatus) and ships no manifest of its
+	  own. Plugin code is linked into the Runner executable, so the app is the
+	  bundle responsible for the declaration. CA92.1 is the "access data written
+	  by this app, as documented in its own API surface" reason, which is what
+	  persisting monitor and task state amounts to.
+
+	  flutter_local_notifications declares the same category and reason in its own
+	  bundled privacy manifest; declaring it twice is harmless and keeps this file
+	  correct even if that plugin's packaging changes.
+
+	  Nothing is tracked and no data is collected by the developer. See
+	  docs/privacy-policy.md for the user-facing policy.
+	-->
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>CA92.1</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

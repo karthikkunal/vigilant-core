@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# Nothing here is private, but there is also nothing to crawl that a reader of
+# index.html does not already have. The .md copy of the policy is linked from
+# the rendered page, so it stays open too.

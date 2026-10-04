@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found — vigilant-core</title>
+<meta name="robots" content="noindex, follow">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0b1020">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/site.css">
+<script>
+  (function () {
+    document.documentElement.classList.add("js");
+    var stored = null;
+    try { stored = localStorage.getItem("vigilant-core-theme"); } catch (e) {}
+    if (stored !== "light" && stored !== "dark") {
+      stored = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+    }
+    document.documentElement.setAttribute("data-theme", stored);
+  })();
+</script>
+</head>
+
+<body>
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="brand" href="/">
+      <span class="brand__mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <path d="M9.3 7.7a6 6 0 0 0 0 8.6"/>
+          <path d="M6.3 5.3a9.5 9.5 0 0 0 0 13.4"/>
+          <path d="M14.7 7.7a6 6 0 0 1 0 8.6"/>
+          <path d="M17.7 5.3a9.5 9.5 0 0 1 0 13.4"/>
+          <circle cx="12" cy="12" r="2.15" fill="currentColor" stroke="none"/>
+        </svg>
+      </span>
+      vigilant-core
+    </a>
+    <div class="header-actions">
+      <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.2"/>
+          <path d="M12 2.5v2.2M12 19.3v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="container">
+    <article class="prose" style="padding-block: clamp(3rem, 9vw, 6rem)">
+      <span class="section__eyebrow">404</span>
+      <h1>No page at this address.</h1>
+      <p>
+        The site here is the vigilant-core marketing page and the published privacy
+        policy. There is nothing else, because there is no dashboard to log in to
+        &mdash; that is rather the point of the app.
+      </p>
+      <p>
+        <a class="prose__back" href="/">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+          Back to the homepage
+        </a>
+      </p>
+      <p>
+        Looking for the app itself? The
+        <a href="https://gitlab.com/ranjithraj/vigilant-core" rel="noopener">source and issue tracker</a>
+        live on GitLab.
+      </p>
+    </article>
+  </div>
+</main>
+
+<script src="/assets/site.js" defer></script>
+</body>
+</html>

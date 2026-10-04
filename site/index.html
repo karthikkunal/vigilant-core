@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>vigilant-core — local-first monitoring for the websites and domains you rely on</title>
+<meta name="description" content="vigilant-core monitors the websites and domains you own or depend on — registration, TLS certificate chain, DNS, email authentication, Certificate Transparency, HTTP headers, TCP ports and body assertions — and pages you when something breaks. No account, no backend, no tracking.">
+<link rel="canonical" href="https://vigilant-core-9a0e4f.gitlab.io/">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0b1020">
+
+<!-- Open Graph / Twitter. og:image is generated at build time by scripts/build-site.sh. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="vigilant-core">
+<meta property="og:title" content="vigilant-core — local-first monitoring for the sites you rely on">
+<meta property="og:description" content="Know the moment a website or domain you depend on breaks. Checks run on your device. No account, no backend, no tracking.">
+<meta property="og:url" content="https://vigilant-core-9a0e4f.gitlab.io/">
+<meta property="og:image" content="https://vigilant-core-9a0e4f.gitlab.io/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="vigilant-core — local-first monitoring for the sites you rely on">
+<meta name="twitter:description" content="Know the moment a website or domain you depend on breaks. Checks run on your device.">
+<meta name="twitter:image" content="https://vigilant-core-9a0e4f.gitlab.io/assets/og.png">
+
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="stylesheet" href="assets/site.css">
+
+<script>
+  /* Resolve the theme before first paint so there is no flash of the wrong
+   * palette. Kept inline and dependency-free on purpose; site.js then adopts
+   * whatever this decided so the toggle's label matches the page. */
+  (function () {
+    document.documentElement.classList.add("js");
+    var stored = null;
+    try { stored = localStorage.getItem("vigilant-core-theme"); } catch (e) {}
+    if (stored !== "light" && stored !== "dark") {
+      stored = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+    }
+    document.documentElement.setAttribute("data-theme", stored);
+  })();
+</script>
+</head>
+
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header" data-header>
+  <div class="container site-header__inner">
+    <a class="brand" href="./">
+      <span class="brand__mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <path d="M9.3 7.7a6 6 0 0 0 0 8.6"/>
+          <path d="M6.3 5.3a9.5 9.5 0 0 0 0 13.4"/>
+          <path d="M14.7 7.7a6 6 0 0 1 0 8.6"/>
+          <path d="M17.7 5.3a9.5 9.5 0 0 1 0 13.4"/>
+          <circle cx="12" cy="12" r="2.15" fill="currentColor" stroke="none"/>
+        </svg>
+      </span>
+      vigilant-core
+    </a>
+
+    <nav class="site-nav" aria-label="Sections">
+      <a href="#checks">What it checks</a>
+      <a href="#screens">Screens</a>
+      <a href="#alerts">Alerting</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.2"/>
+          <path d="M12 2.5v2.2M12 19.3v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/>
+        </svg>
+      </button>
+      <a class="button button--ghost" href="https://gitlab.com/ranjithraj/vigilant-core" rel="noopener">Source</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ------------------------------------------------------------- hero -- -->
+  <section class="hero">
+    <div class="container hero__inner">
+      <div>
+        <a class="pill" href="https://gitlab.com/ranjithraj/vigilant-core/-/issues">
+          <span class="pill__tag">1.0.0</span>
+          Store submissions in progress &mdash; follow along
+        </a>
+
+        <h1 class="hero__title">Know the moment something <em>you rely on</em> breaks.</h1>
+
+        <p class="hero__lede">
+          vigilant-core inspects the websites and domains you own or depend on &mdash;
+          registration, the full TLS chain, DNS, email authentication, Certificate
+          Transparency, security headers, ports and health endpoints &mdash; then
+          pages you when one of them stops working. Every check runs on your
+          device. There is no vigilant-core account, and no vigilant-core server.
+        </p>
+
+        <div class="button-row hero__actions">
+          <a class="button button--primary" href="app/">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 3.5v17l14-8.5-14-8.5Z"/>
+            </svg>
+            Try it in your browser
+          </a>
+          <a class="button button--ghost" href="https://gitlab.com/ranjithraj/vigilant-core/-/issues">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 8.5a6 6 0 1 0-12 0c0 6-2.5 7.5-2.5 7.5h17S18 14.5 18 8.5"/>
+              <path d="M10.3 19.5a2 2 0 0 0 3.4 0"/>
+            </svg>
+            Get notified when it ships
+          </a>
+        </div>
+
+        <ul class="hero__meta">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 12.5 5 5 10-11"/></svg>
+            Android 10+ and iOS
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 12.5 5 5 10-11"/></svg>
+            No account, no analytics
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 12.5 5 5 10-11"/></svg>
+            GPL-3.0-or-later
+          </li>
+        </ul>
+
+        <p class="hero__note">
+          The browser build is <strong>discovery only</strong>: a browser has no
+          platform resolver and no foreground service, so it runs on
+          DNS-over-HTTPS and cannot keep checking once you close the tab. Monitors
+          and pages are Android and iOS.
+        </p>
+      </div>
+
+      <div class="phones">
+        <figure class="phone phone--back">
+          <div class="phone__bar">
+            <i></i><i></i><i></i>
+            <span class="phone__url">vigilant-core &middot; add monitor</span>
+          </div>
+          <img src="images/screenshots/06-add-monitor.webp" width="720" height="1280"
+               alt="The single Add monitor form: one field for a domain, URL or host:port, with vigilant-core working out the kind of check from what you enter.">
+        </figure>
+        <figure class="phone phone--front">
+          <div class="phone__bar">
+            <i></i><i></i><i></i>
+            <span class="phone__url">vigilant-core &middot; scan</span>
+          </div>
+          <img src="images/screenshots/03-report-at-a-glance.webp" width="720" height="1280"
+               alt="A scan report for wikipedia.org: a first-scan baseline card explaining that scanning again will report what changed, above an at-a-glance grid showing HTTP 200, TLS with 37 days left, SPF and DMARC found, and 6 DNS record types.">
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------ stats -- -->
+  <section class="section section--tight">
+    <div class="container">
+      <ul class="stats" style="list-style:none;padding:0;margin:0">
+        <li class="stat"><div class="stat__value">0</div><div class="stat__label">vigilant-core accounts to create</div></li>
+        <li class="stat"><div class="stat__value">0</div><div class="stat__label">Analytics or tracking SDKs</div></li>
+        <li class="stat"><div class="stat__value">3</div><div class="stat__label">Kinds of monitor: domain, TCP, assertion</div></li>
+        <li class="stat"><div class="stat__value">4</div><div class="stat__label">Expiry reminders: 30, 14, 7 and 1 day out</div></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ----------------------------------------------------------- checks -- -->
+  <section class="section" id="checks">
+    <div class="container">
+      <div class="section__head" data-reveal>
+        <span class="section__eyebrow">What it checks</span>
+        <h2 class="section__title">One domain in, a full picture out.</h2>
+        <p class="section__lede">
+          Enter a domain or subdomain. vigilant-core runs every applicable probe in
+          parallel and reports what it found &mdash; and which source answered, so a
+          degraded check never passes for a healthy one.
+        </p>
+      </div>
+
+      <div class="grid">
+        <article class="card" data-reveal>
+          <div class="card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="5" width="18" height="14" rx="2.5"/>
+              <circle cx="8.5" cy="10.5" r="2"/>
+              <path d="M5.5 16.5c.6-1.8 1.7-2.7 3-2.7s2.4.9 3 2.7M14.5 9.5H19M14.5 13H19"/>
+            </svg>
+          </div>
+          <h3 class="card__title">Registration</h3>
+          <p class="card__body">
+            Expiry date, registrar, status codes and nameservers, read over RDAP
+            rather than scraped from a webpage.
+          </p>
+        </article>
+
+        <article class="card card--feature" data-reveal>
+          <div class="card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4.5" y="10.5" width="15" height="10" rx="2.2"/>
+              <path d="M8 10.5V7.8a4 4 0 0 1 8 0v2.7M12 14.6v2.2"/>
+            </svg>
+          </div>
+          <h3 class="card__title">TLS leaf and full chain</h3>
+          <p class="card__body">
+            Subject, issuer, expiry and validity window &mdash; plus every
+            intermediate the server <em>actually presents</em>, and whether the
+            platform considers the chain trusted.
+          </p>
+          <p class="card__note">
+            Captured natively on Android and iOS. Most uptime tools stop at the
+            leaf certificate.
+          </p>
+        </article>
+
+        <article class="card" data-reveal>
+          <div class="card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3.5" y="4.5" width="17" height="6" rx="1.8"/>
+              <rect x="3.5" y="13.5" width="17" height="6" rx="1.8"/>
+              <path d="M7 7.5h.01M7 16.5h.01M10.5 7.5h6.5M10.5 16.5h6.5"/>
+            </svg>
+          </div>
+          <h3 class="card__title">DNS records</h3>
+          <p class="card__body">
+            <code>A</code>, <code>AAAA</code>, <code>MX</code>, <code>NS</code>,
+            <code>TXT</code> and <code>CAA</code>. On Android these come from the
+            device&rsquo;s own resolver by default, so a scan is not disclosed to a
+            public DNS-over-HTTPS provider.
+          </p>
+        </article>
+
+        <article class="card" data-reveal>
+          <div class="card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2.5" y="5" width="19" height="14" rx="2.5"/>
+              <path d="m3.5 7 8.5 6 8.5-6"/>
+            </svg>
+          </div>
+          <h3 class="card__title">Email authentication</h3>
+          <p class="card__body">
+            SPF, DMARC and CAA, summarised the way you actually read them: is
+            SPF aligned, is DMARC enforced, is the policy too strict to survive.
+          </p>
+        </article>
+
+        <article class="card" data-reveal>
+          <div class="card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="9.5" r="5.5"/>
+              <path d="M8.5 14 7 21l5-2.4L17 21l-1.5-7"/>
+            </svg>
+          </div>
+          <h3 class="card__title">Certificate Transparency</h3>
+          <p class="card__body">
+            Issuance history from two independent logs, and the subdomains they
+            reveal &mdash; a quick map of what a domain exposes.
+          </p>
+        </article>
+
+        <article class="card" data-reveal>
+          <div class="card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="8.5"/>
+              <path d="M3.5 12h17M12 3.5c2.2 2.4 3.4 5.4 3.4 8.5S14.2 18.1 12 20.5c-2.2-2.4-3.4-5.4-3.4-8.5S9.8 5.9 12 3.5Z"/>
+            </svg>
+          </div>
+          <h3 class="card__title">HTTP and HSTS</h3>
+          <p class="card__body">
+            Status code, redirect chain and security headers, with a plain reading
+            of what HSTS is actually set to.
+          </p>
+        </article>
+
+        <article class="card" data-reveal>
+          <div class="card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="5" r="2.5"/>
+              <circle cx="5" cy="18" r="2.5"/>
+              <circle cx="19" cy="18" r="2.5"/>
+              <path d="M12 7.5v4M12 11.5 6.5 16.2M12 11.5l5.5 4.7"/>
+            </svg>
+          </div>
+          <h3 class="card__title">TCP host and port</h3>
+          <p class="card__body">
+            A socket check against any <code>host:port</code> you choose, on a
+            cadence you set. Good for databases, game servers and anything that
+            does not speak HTTP.
+          </p>
+        </article>
+
+        <article class="card" data-reveal>
+          <div class="card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m9 8-4.5 4L9 16M15 8l4.5 4L15 16M13.5 6.5 10.5 17.5"/>
+            </svg>
+          </div>
+          <h3 class="card__title">HTTP body assertions</h3>
+          <p class="card__body">
+            Assert that a health endpoint returns 200 and still contains the string
+            you expect. <code>ok=true</code> means the service is really up, not
+            just reachable.
+          </p>
+        </article>
+
+        <article class="card" data-reveal>
+          <div class="card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 7h10M4 12h6M4 17h10"/>
+              <path d="M17 9.5 20 12l-3 2.5M20 12h-6"/>
+            </svg>
+          </div>
+          <h3 class="card__title">Change since last scan</h3>
+          <p class="card__body">
+            Every scan is compared with the previous one on this device, so a
+            withdrawn DMARC record, a moved expiry date, a new certificate issuer
+            or a dropped mail exchanger shows up as a change instead of having to
+            be noticed by eye.
+          </p>
+          <p class="card__note">
+            The comparison is local. There is nothing stored off-device to
+            compare against.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- --------------------------------------------------------- screens --- -->
+  <section class="section" id="screens">
+    <div class="container">
+      <div class="section__head" data-reveal>
+        <span class="section__eyebrow">The app</span>
+        <h2 class="section__title">Calm, dense, and honest about state.</h2>
+        <p class="section__lede">
+          Real screenshots from a release build. Every panel shows which source
+          answered, when it was checked, and whether the result is still fresh.
+        </p>
+      </div>
+
+      <div class="shots">
+        <figure class="shot" data-reveal>
+          <div class="shot__frame">
+            <img src="images/screenshots/02-scan-entry.webp" width="720" height="1280" loading="lazy" decoding="async"
+                 alt="The scan screen: a Domain entry field, an optional Scan subdomains checkbox, a Run scan button, and a note explaining that a scan is local-first but still contacts the selected site and public lookup services.">
+          </div>
+          <figcaption><b>Scan entry</b>States plainly what a scan sends, before you send it.</figcaption>
+        </figure>
+
+        <figure class="shot" data-reveal>
+          <div class="shot__frame">
+            <img src="images/screenshots/03-report-at-a-glance.webp" width="720" height="1280" loading="lazy" decoding="async"
+                 alt="Scan result header with a Healthy verdict, and an at-a-glance grid of availability, TLS, registration, email auth, DNS and subdomain counts.">
+          </div>
+          <figcaption><b>At a glance</b>Every fact populated, and the baseline saved for next time.</figcaption>
+        </figure>
+
+        <figure class="shot" data-reveal>
+          <div class="shot__frame">
+            <img src="images/screenshots/04-tls-certificate-chain.webp" width="720" height="1280" loading="lazy" decoding="async"
+                 alt="The TLS certificate panel expanded, listing subject, issuer, expiry date, time remaining, the number of presented intermediate certificates and the platform trust verdict.">
+          </div>
+          <figcaption><b>The presented chain</b>Subject, issuer, intermediates, and whether the platform trusts it.</figcaption>
+        </figure>
+
+        <figure class="shot" data-reveal>
+          <div class="shot__frame">
+            <img src="images/screenshots/05-provider-status.webp" width="720" height="1280" loading="lazy" decoding="async"
+                 alt="Per-source status list showing whether RDAP, DNS, Certificate Transparency and the HTTP target each answered or failed.">
+          </div>
+          <figcaption><b>Per-source status</b>A failed lookup is shown, never hidden behind a green tick.</figcaption>
+        </figure>
+
+        <figure class="shot" data-reveal>
+          <div class="shot__frame">
+            <img src="images/screenshots/06-add-monitor.webp" width="720" height="1280" loading="lazy" decoding="async"
+                 alt="The Monitors tab with a healthy TCP target, its cadence, latency budget and last-check time inline, a single Add monitor button, and the time of the last background check.">
+          </div>
+          <figcaption><b>Your monitors</b>Cadence, budget, last check, and when the last sweep ran.</figcaption>
+        </figure>
+
+        <figure class="shot" data-reveal>
+          <div class="shot__frame">
+            <img src="images/screenshots/07-settings.webp" width="720" height="1280" loading="lazy" decoding="async"
+                 alt="The Settings screen: a Transparent by design card stating there is no account or backend, a DNS resolver choice between the device resolver and a custom DNS-over-HTTPS endpoint, and a Site list section that copies watched addresses to the clipboard.">
+          </div>
+          <figcaption><b>Settings</b>The resolver is your choice, and the site list is one tap from the clipboard.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------------------------------------------------------- alerts -- -->
+  <section class="section" id="alerts">
+    <div class="container split">
+      <div data-reveal>
+        <span class="section__eyebrow">Alerting</span>
+        <h2 class="section__title">It escalates until you acknowledge it.</h2>
+        <p class="section__lede">
+          A notification you swipe away is not an alert. On Android a foreground
+          service keeps checking with the app closed, and a failure keeps paging
+          until you say you have seen it.
+        </p>
+
+        <ul class="checklist" style="margin-top:2rem">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 12.5 5 5 10-11"/></svg>
+            <span><strong>Full-screen alert, sound, vibration</strong>Escalation continues until acknowledged.</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 12.5 5 5 10-11"/></svg>
+            <span><strong>Acknowledge, Mute 1h, Re-check</strong>Handled from the alert itself, without opening the app.</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 12.5 5 5 10-11"/></svg>
+            <span><strong>Per-monitor tuning</strong>Cadence, failure threshold, latency budget, sound, vibration and quiet hours &mdash; per monitor, not global.</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 12.5 5 5 10-11"/></svg>
+            <span><strong>Survives a reboot</strong>Monitoring resumes without you opening the app.</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 12.5 5 5 10-11"/></svg>
+            <span><strong>Offline-capable sound</strong>A bundled alarm tone ships with the app, so alerting still works with no network.</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 12.5 5 5 10-11"/></svg>
+            <span><strong>Stale is never green</strong>If a result is older than expected it is labelled stale. An old pass is not a pass.</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="terminal" data-reveal>
+        <div class="terminal__bar" aria-hidden="true"><i></i><i></i><i></i></div>
+        <pre class="terminal__body" aria-label="Example scan report for wikipedia.org"><span class="hi">wikipedia.org</span>                                  <span class="ok">healthy</span>
+
+<span class="k">availability  </span>HTTP 200            responded in 184 ms
+<span class="k">tls           </span>38d left           chain: 3 intermediates, trusted
+<span class="k">registration  </span>108d left          registrar: Wikimedia Foundation
+<span class="k">email auth    </span>SPF + DMARC        both aligned
+<span class="k">dns           </span>6 record types     A AAAA MX NS TXT CAA
+<span class="k">subdomains    </span>0 found            2 CT entries checked
+<span class="k">http          </span>HSTS 31536000      0 redirects
+
+<span class="k">checked 2026-09-26 12:52</span>
+rdap <span class="ok">ok</span>  dns <span class="ok">ok (device resolver)</span>  ct <span class="ok">ok</span>  target <span class="ok">ok</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------------------------------------------------------- privacy -- -->
+  <section class="section" id="privacy">
+    <div class="container">
+      <div class="section__head" data-reveal>
+        <span class="section__eyebrow">Local-first</span>
+        <h2 class="section__title">No account. No backend. Nothing to leak.</h2>
+        <p class="section__lede">
+          Because vigilant-core operates no server, the developers cannot see your
+          data even in principle. What that does <em>not</em> mean is spelled
+          out below, because &ldquo;private&rdquo; is not worth much without the
+          caveat.
+        </p>
+      </div>
+
+      <div class="split">
+        <article class="card" data-reveal>
+          <h3 class="card__title">Stays on your device</h3>
+          <p class="card__body">
+            Monitors, check history, settings and the last result per monitor are
+            written to private app storage only. Deleting the app deletes all of
+            it &mdash; there is no server-side copy, so there is nothing to
+            request the deletion of.
+          </p>
+          <ul class="checklist" style="margin-top:1.25rem">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 12.5 5 5 10-11"/></svg><span>No analytics, advertising, attribution or crash-reporting SDK</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 12.5 5 5 10-11"/></svg><span>No advertising identifier, and no location, camera, contacts or storage access</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 12.5 5 5 10-11"/></svg><span>Parsing, diffing, expiry arithmetic and every alert decision happen on-device</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 12.5 5 5 10-11"/></svg><span>Android DNS goes to the resolver your device is already configured to use &mdash; or to a DNS-over-HTTPS endpoint you choose, if you would rather query every record type</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4.5 12.5 5 5 10-11"/></svg><span>Moving to a new phone copies a plain list of addresses and nothing else &mdash; cadence, thresholds, quiet hours and learned expiry dates stay behind</span></li>
+          </ul>
+        </article>
+
+        <article class="card" data-reveal>
+          <h3 class="card__title">What does leave your device</h3>
+          <p class="card__body">
+            A scan is not offline. To answer a question about your domain,
+            vigilant-core has to ask someone who already knows the answer &mdash; so
+            the domain string you typed is sent to these public services, which
+            each see your IP address, the query and the time:
+          </p>
+          <ul class="checklist" style="margin-top:1.25rem">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5.5M12 16.2h.01"/></svg><span><strong>IANA / ICANN</strong>RDAP bootstrap &mdash; which registry to ask</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5.5M12 16.2h.01"/></svg><span><strong>The domain&rsquo;s registry</strong>Registration data over RDAP</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5.5M12 16.2h.01"/></svg><span><strong>crt.sh and Cert Spotter</strong>Certificate Transparency logs &mdash; these publish query logs</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5.5M12 16.2h.01"/></svg><span><strong>Cloudflare DoH</strong>DNS-over-HTTPS on iOS and web always; on Android only if you opt in by pointing the app at a DoH endpoint</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5.5M12 16.2h.01"/></svg><span><strong>The site itself</strong>Monitors connect directly to the host, port or URL you configured</span></li>
+          </ul>
+        </article>
+      </div>
+
+      <p class="section__lede" style="max-width:44rem;margin-top:1.5rem" data-reveal>
+        Every one of these permissions has a stated reason, and none of them is
+        marketing. The
+        <a href="privacy-policy.html">full privacy policy</a> names each service,
+        its operator and its own policy &mdash; read it before you monitor a
+        domain whose existence needs to stay private.
+      </p>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------- who / what -- -->
+  <section class="section" id="who">
+    <div class="container">
+      <div class="section__head" data-reveal>
+        <span class="section__eyebrow">Who it&rsquo;s for</span>
+        <h2 class="section__title">Built for the handful of things you actually own.</h2>
+        <p class="section__lede">
+          Not for a fleet of nine hundred endpoints. For a personal site, a side
+          project, a homelab, or the services you quietly depend on at work.
+        </p>
+      </div>
+
+      <div class="grid">
+        <article class="card" data-reveal>
+          <h3 class="card__title">Personal sites and side projects</h3>
+          <p class="card__body">
+            Catch the renewal you forgot and the certificate that quietly expired
+            on the one domain that matters.
+          </p>
+        </article>
+        <article class="card" data-reveal>
+          <h3 class="card__title">Homelabs and self-hosted services</h3>
+          <p class="card__body">
+            A TCP monitor per service, a body assertion per health endpoint, and a
+            phone that tells you which one died while you were asleep.
+          </p>
+        </article>
+        <article class="card" data-reveal>
+          <h3 class="card__title">Small teams and organisations</h3>
+          <p class="card__body">
+            A lightweight way for one operator to watch a small set of sites and
+            services they own or depend on &mdash; without adding a vendor, a
+            signup or a data processor.
+          </p>
+        </article>
+      </div>
+
+      <div class="card" style="margin-top:1rem" data-reveal>
+        <h3 class="card__title">And what it deliberately is not</h3>
+        <p class="card__body" style="margin-bottom:1rem">
+          A local-only app structurally cannot do some things that hosted uptime
+          services do. Rather than ship a thinner version of those, here is the
+          trade:
+        </p>
+        <ul class="checklist">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5.5M12 16.2h.01"/></svg>
+            <span><strong>No shared dashboard and no automatic sync.</strong>A monitor lives on the device that created it. You can copy your list of watched sites to the clipboard as plain text and paste it on another device, but nothing is synced for you, and there is no account to sync through.</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5.5M12 16.2h.01"/></svg>
+            <span><strong>No webhooks and no remote push.</strong>Alerts are delivered locally to your device.</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5.5M12 16.2h.01"/></svg>
+            <span><strong>iOS gets expiry reminders and on-open discovery.</strong>No real-time background paging in this release; iOS cannot promise it.</span>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5.5M12 16.2h.01"/></svg>
+            <span><strong>Background cadence is best-effort on Android.</strong>Doze and OEM power rules can delay a check, so results are labelled stale rather than shown as healthy.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------- faq -- -->
+  <section class="section" id="faq">
+    <div class="container">
+      <div class="section__head" style="margin-inline:auto;text-align:center" data-reveal>
+        <span class="section__eyebrow">Questions</span>
+        <h2 class="section__title">The ones worth asking.</h2>
+      </div>
+
+      <div class="faq">
+        <details data-reveal>
+          <summary>Do I need a vigilant-core account?</summary>
+          <div class="faq__body">
+            <p>
+              No. There is no signup, and no vigilant-core server to sign in to. Your
+              monitors and their results live in private storage on the device that
+              created them. Uninstalling the app is the complete erasure path.
+            </p>
+          </div>
+        </details>
+
+        <details data-reveal>
+          <summary>Is a scan actually offline?</summary>
+          <div class="faq__body">
+            <p>
+              No, and claiming otherwise would be dishonest. The domain you type is
+              sent to RDAP and to Certificate Transparency log operators, because
+              they are the parties that hold the answer. On Android, DNS is resolved
+              by the device&rsquo;s own resolver by default, so Android scans are not
+              disclosed to Cloudflare &mdash; though you can point vigilant-core at a
+              DNS-over-HTTPS endpoint if you prefer that, and iOS and web use one
+              because they have no public API for arbitrary record types. The
+              <a href="privacy-policy.html">privacy policy</a> names every service
+              and its operator.
+            </p>
+          </div>
+        </details>
+
+        <details data-reveal>
+          <summary>Why does it use public services at all?</summary>
+          <div class="faq__body">
+            <p>
+              Because there is no other way to answer &ldquo;when does this domain
+              expire&rdquo; or &ldquo;what else is issued for this name&rdquo; from
+              a phone without shipping a copy of the registry and log data. The
+              trade is: third parties see the domain you query, and in exchange you
+              get those answers without a backend, a vendor account or a monthly
+              bill.
+            </p>
+          </div>
+        </details>
+
+        <details data-reveal>
+          <summary>Can it watch something on my own network?</summary>
+          <div class="faq__body">
+            <p>
+              Yes, as long as the phone can reach it. A TCP monitor opens a socket
+              to any <code>host:port</code> you choose, and an assertion monitor
+              issues an HTTP request to a URL and checks the response &mdash; both
+              work fine against a LAN address, as long as you are on the network
+              that serves it. Note that a phone off your home Wi-Fi will not reach
+              <code>192.168.x.x</code>.
+            </p>
+          </div>
+        </details>
+
+        <details data-reveal>
+          <summary>What is the actual differentiator, versus Uptime Kuma or a hosted service?</summary>
+          <div class="faq__body">
+            <p>
+              Two things. First, the TLS <em>full chain</em>: vigilant-core records the
+              intermediates the server actually presents and reports the
+              platform&rsquo;s trust verdict, captured natively on Android and iOS.
+              Second, the privacy shape: no account, no dashboard to log into, and
+              nothing to hand a vendor. In exchange you give up history charts and
+              webhooks &mdash; which is a real loss, and the previous section says so.
+            </p>
+          </div>
+        </details>
+
+        <details data-reveal>
+          <summary>Will it drain my battery, or will Android kill it?</summary>
+          <div class="faq__body">
+            <p>
+              Neither is fully avoidable, so vigilant-core is explicit about it. Checks
+              are on a cadence you choose, with a per-monitor latency budget, and
+              there is an optional battery-optimisation exemption. Android may still
+              delay a cycle while the device is idle &mdash; so a result past its
+              expected freshness is shown as <em>stale</em>, never as healthy.
+            </p>
+          </div>
+        </details>
+
+        <details data-reveal>
+          <summary>Why F-Droid as well as the stores?</summary>
+          <div class="faq__body">
+            <p>
+              F-Droid builds from source with no tracking, no proprietary services
+              and no account, and its recipe for vigilant-core is in the repository
+              already. The project also ships reproducible-build tooling, so two
+              clean builds of the same commit produce the same APK. Play remains
+              the most convenient option for most people, and both are being worked
+              on.
+            </p>
+          </div>
+        </details>
+
+        <details data-reveal>
+          <summary>How much does it cost?</summary>
+          <div class="faq__body">
+            <p>
+              Nothing. vigilant-core is free software under the GNU General Public
+              License, version 3 or later. You can read, modify and redistribute it;
+              if you distribute a modified version, you pass on the same freedom.
+            </p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------- get -- -->
+  <section class="section" id="get">
+    <div class="container">
+      <div class="section__head" data-reveal>
+        <span class="section__eyebrow">Get it</span>
+        <h2 class="section__title">Not in a store yet. Here is how to follow it.</h2>
+        <p class="section__lede">
+          1.0.0 is cut and the store metadata is written, but neither submission
+          has gone through review. The issue tracker is the honest place to watch
+          progress &mdash; and the place to ask for a channel you would rather have.
+        </p>
+      </div>
+
+      <div class="channels" style="margin-bottom:1.5rem">
+        <article class="channel" data-reveal>
+          <div class="channel__head">
+            <span class="channel__name">Source &amp; issues</span>
+            <span class="channel__state" data-state="live">Available now</span>
+          </div>
+          <p>Read the code, follow the commit history, or open an issue.</p>
+          <div class="channel__meta">GPL-3.0-or-later &middot; full history, no redactions</div>
+          <div class="button-row">
+            <a class="button button--ghost" href="https://gitlab.com/ranjithraj/vigilant-core" rel="noopener">Browse the repo</a>
+          </div>
+        </article>
+
+        <article class="channel" data-reveal>
+          <div class="channel__head">
+            <span class="channel__name">Android &middot; F-Droid</span>
+            <span class="channel__state" data-state="soon">In progress</span>
+          </div>
+          <p>Recipe, tag and screenshots are in the repository; the submission is not filed yet.</p>
+          <div class="channel__meta">Built from source &middot; reproducible &middot; no tracking</div>
+        </article>
+
+        <article class="channel" data-reveal>
+          <div class="channel__head">
+            <span class="channel__name">Android &middot; Google Play</span>
+            <span class="channel__state" data-state="soon">In progress</span>
+          </div>
+          <p>Listing copy, privacy URL and screenshots are written and waiting on upload.</p>
+          <div class="channel__meta">Full-screen alerts need a Play policy declaration</div>
+        </article>
+
+        <article class="channel" data-reveal>
+          <div class="channel__head">
+            <span class="channel__name">iOS</span>
+            <span class="channel__state" data-state="soon">Planned</span>
+          </div>
+          <p>Discovery and expiry reminders work today; real-time paging is not promised.</p>
+          <div class="channel__meta">Reminder checkpoints 30 / 14 / 7 / 1 days out</div>
+        </article>
+      </div>
+
+      <div class="cta" data-reveal>
+        <h2 class="cta__title">Want it on your phone?</h2>
+        <p class="cta__lede">
+          Watch the submission progress on the issue tracker, or ask to be told when
+          a channel goes live. The source is public either way, and you can build
+          the APK yourself today.
+        </p>
+        <div class="button-row">
+          <a class="button button--primary" href="https://gitlab.com/ranjithraj/vigilant-core/-/issues">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 8.5a6 6 0 1 0-12 0c0 6-2.5 7.5-2.5 7.5h17S18 14.5 18 8.5"/>
+              <path d="M10.3 19.5a2 2 0 0 0 3.4 0"/>
+            </svg>
+            Get notified when it ships
+          </a>
+          <a class="button button--ghost" href="https://gitlab.com/ranjithraj/vigilant-core/-/blob/main/fdroid/dev.ranjithraj.vigilant-core.yml" rel="noopener">
+            View the F-Droid recipe
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__inner">
+      <div>
+        <a class="brand" href="./">
+          <span class="brand__mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M9.3 7.7a6 6 0 0 0 0 8.6"/>
+              <path d="M6.3 5.3a9.5 9.5 0 0 0 0 13.4"/>
+              <path d="M14.7 7.7a6 6 0 0 1 0 8.6"/>
+              <path d="M17.7 5.3a9.5 9.5 0 0 1 0 13.4"/>
+              <circle cx="12" cy="12" r="2.15" fill="currentColor" stroke="none"/>
+            </svg>
+          </span>
+          vigilant-core
+        </a>
+        <p class="site-footer__note">
+          Free software under the GPL-3.0-or-later. Not affiliated with Docker,
+          Inc.
+        </p>
+      </div>
+
+      <ul class="site-footer__links">
+        <li><a href="https://gitlab.com/ranjithraj/vigilant-core" rel="noopener">Source</a></li>
+        <li><a href="https://gitlab.com/ranjithraj/vigilant-core/-/issues" rel="noopener">Issues</a></li>
+        <li><a href="https://gitlab.com/ranjithraj/vigilant-core/-/commits/main" rel="noopener">Commits</a></li>
+        <li><a href="privacy-policy.html">Privacy policy</a></li>
+        <li><a href="https://gitlab.com/ranjithraj/vigilant-core/-/blob/main/LICENSE" rel="noopener">Licence</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js" defer></script>
+</body>
+</html>

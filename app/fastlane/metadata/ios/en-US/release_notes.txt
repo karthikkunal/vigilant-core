@@ -1,0 +1,10 @@
+First release of vigilant-core on iOS.
+
+* Local-first discovery: registration expiry (RDAP), TLS leaf and full chain, DNS and email-authentication records, Certificate Transparency, HTTP and HSTS, and passively discovered subdomains
+* Expiry reminders scheduled on your iPhone 30, 14, 7 and 1 days ahead, so they arrive even if you never reopen the app
+* Monitors for domains, explicit TCP host/port targets, and HTTP endpoints with local body assertions
+* Monitor details show the last check, its provider, and whether a result is stale
+* No account, no backend, no analytics, no advertising
+
+Continuous background paging is an Android feature in this release; on iOS,
+discovery and checks run while the app is open.

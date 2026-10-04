@@ -1,0 +1,19 @@
+vigilant-core helps individuals, operators, and organisations monitor the websites and services they own or depend on. It runs discovery and monitoring from your device, with no vigilant-core account or backend.
+
+Enter a domain to inspect:
+
+* registration expiry, registrar, status codes and nameservers (RDAP)
+* the TLS certificate leaf and the full chain the server actually presents
+* DNS records, plus SPF, DMARC and CAA
+* Certificate Transparency entries and subdomains
+* HTTP status, redirects and HSTS
+* explicit TCP host/port checks
+* local HTTP body assertions for health endpoints
+
+On Android, a foreground service checks monitored websites, domains, and TCP targets on a cadence and alerts you with sound, vibration and a full-screen alert when something breaks. Acknowledge, Mute and Re-check actions are available from the alert. Each monitor can have its own cadence, failure threshold, sound and vibration, and quiet hours.
+
+Expiry reminders are scheduled locally (30, 14, 7 and 1 days before a registration or certificate expires), so they arrive even if the app is never opened again. Monitor details show the last check time, provider status, and whether a result is stale.
+
+Privacy and network use
+
+vigilant-core itself does not store your monitor data on a server. A scan is not offline: the selected domain or host is sent to the public lookup services used for discovery, such as RDAP, DNS-over-HTTPS, and Certificate Transparency. Monitors then contact the selected site or service directly. Review those services' policies before monitoring sensitive names.

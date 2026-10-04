@@ -1,0 +1,1 @@
+See what a domain really exposes — registration, the full TLS chain, DNS, email auth and subdomains — then get a local reminder before anything expires.

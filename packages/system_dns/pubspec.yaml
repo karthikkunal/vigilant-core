@@ -1,0 +1,31 @@
+name: system_dns
+description: "Resolves DNS through the platform's own resolver instead of a public DNS-over-HTTPS service."
+version: 0.1.0
+license: GPL-3.0-or-later
+publish_to: none
+
+environment:
+  sdk: ^3.13.4
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.0.2
+  discovery_core:
+    path: ../discovery_core
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  plugin:
+    # Android only. Other platforms have no public API for arbitrary record
+    # types, so the app keeps using DNS-over-HTTPS there; the Dart client
+    # reports itself unsupported and the caller substitutes its own resolver.
+    platforms:
+      android:
+        package: dev.karthikkunal.system_dns
+        pluginClass: SystemDnsPlugin

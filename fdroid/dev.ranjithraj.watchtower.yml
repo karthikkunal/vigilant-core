@@ -1,0 +1,106 @@
+# F-Droid build metadata for vigilant-core.
+#
+# Submit this file to:
+#   https://gitlab.com/fdroid/fdroiddata/-/blob/master/metadata/dev.ranjithraj.vigilant-core.yml
+#
+# The only field left to fill is `commit`, which must name the tagged 1.0.0
+# source commit. Validate with:
+#   cd fdroiddata && fdroid build --verbose --latest dev.ranjithraj.vigilant-core
+#
+# Comments are tolerated in a fork but removed by F-Droid maintainers.
+
+Categories:
+  - Development
+  - Internet
+
+License: GPL-3.0-or-later
+AuthorName: Ranjith Raj
+AuthorEmail: ranjithraj@riseup.net
+WebSite: https://gitlab.com/ranjithraj/vigilant-core
+SourceCode: https://gitlab.com/ranjithraj/vigilant-core
+IssueTracker: https://gitlab.com/ranjithraj/vigilant-core/-/issues
+
+Name: vigilant-core
+AutoName: vigilant-core
+Summary: Local-first website and domain monitoring
+Description: |-
+    vigilant-core helps individuals, operators, and organisations monitor the
+    websites and services they own or depend on. It runs discovery and
+    monitoring from your device, with no vigilant-core account or backend.
+
+    Enter a domain to inspect:
+
+    * registration expiry, registrar, status and nameservers (RDAP)
+    * the TLS certificate leaf and full chain the server presents
+    * DNS records plus SPF, DMARC and CAA
+    * Certificate Transparency entries and subdomains
+    * HTTP status, redirects and HSTS
+    * explicit TCP host/port checks
+    * local HTTP body assertions for health endpoints
+
+    On Android, a foreground service checks monitored websites, domains, and
+    TCP targets on a cadence and alerts you with sound, vibration and a
+    full-screen alert when something breaks. Acknowledge, Mute and Re-check
+    actions are available from the alert. Each monitor can have its own
+    cadence, failure threshold, sound and vibration, and quiet hours.
+
+    Expiry reminders are scheduled locally, so they arrive even if the app is
+    never opened again. Monitor details show the last check time, provider
+    status, and whether a result is stale.
+
+    Privacy and network use
+
+    vigilant-core itself does not store your monitor data on a server. A scan is
+    not offline: the selected domain or host is sent to the public lookup
+    services used for discovery, such as RDAP and Certificate Transparency. On
+    Android, DNS is resolved by the device's own resolver, so no public
+    DNS-over-HTTPS service is contacted; iOS and the web build use one. Monitors
+    then contact the selected site or service directly. Review those services'
+    policies before monitoring sensitive names.
+
+RepoType: git
+Repo: https://gitlab.com/ranjithraj/vigilant-core
+
+Builds:
+  - versionName: 1.0.0
+    versionCode: 1
+    # The commit F-Droid checks out to build 1.0.0, i.e. the one tagged 1.0.0.
+    # Verify with: git rev-parse '1.0.0^{commit}'
+    commit: 462bc7d83402de0281c76ff2fb049c2aef101389
+    # The Flutter project lives in app/; the local packages/ path dependencies
+    # are resolved from the repository root.
+    subdir: app
+    # Named app-release.apk even though it is unsigned. A clean F-Droid checkout
+    # has no key.properties, so build.gradle.kts leaves signingConfig null and
+    # Gradle emits app-release-unsigned.apk -- but the Flutter tool copies its
+    # output to app-release.apk regardless. Verified on a clean worktree: the
+    # file has no META-INF signature entries, so F-Droid can sign it itself and
+    # the unsigned payload stays reproducible.
+    output: build/app/outputs/flutter-apk/app-release.apk
+    srclibs:
+      - flutter@3.47.5
+    prebuild:
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - $$flutter$$/bin/flutter config --no-analytics
+      - $$flutter$$/bin/flutter pub get --enforce-lockfile
+    # scandelete paths are resolved against the source ROOT, not subdir, so
+    # the pub cache is at app/.pub-cache even though the build runs in app/.
+    # Nothing is needed for the Flutter srclib: with srclibs the SDK lives
+    # outside the source tree, so the scanner never sees it and a glob naming
+    # it would fail to match.
+    scandelete:
+      - app/.pub-cache
+    build:
+      - export PUB_CACHE=$(pwd)/.pub-cache
+      - $$flutter$$/bin/flutter build apk --release
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+UpdateCheckData: pubspec.yaml|version:\s.+\+(\d+)|.|version:\s(.+)\+
+# The version code is the `+N` in pubspec.yaml and increments by one per
+# release, so the next code after %c is %c + 1. The template's `%c * 10 + 1`
+# suits a different scheme and would skip codes here.
+VercodeOperation:
+  - '%c + 1'
+CurrentVersion: 1.0.0
+CurrentVersionCode: 1

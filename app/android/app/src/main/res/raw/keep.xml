@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Keep the bundled alarm sound.
+
+  The notification channel references it by name at runtime
+  (RawResourceAndroidNotificationSound('alarm')), so the resource shrinker cannot
+  see the reference and will otherwise strip it from release builds.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@raw/alarm" />

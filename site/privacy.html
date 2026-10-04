@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — vigilant-core</title>
+<meta name="description" content="The vigilant-core privacy policy: no account, no backend, no analytics, and an exact account of which third-party lookup services see a scanned domain.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://vigilant-core-9a0e4f.gitlab.io/privacy-policy.html">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#0b1020">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="vigilant-core">
+<meta property="og:title" content="Privacy Policy — vigilant-core">
+<meta property="og:description" content="No account, no backend, no analytics — and an exact account of which third-party lookup services see a scanned domain.">
+<meta property="og:url" content="https://vigilant-core-9a0e4f.gitlab.io/privacy-policy.html">
+<meta name="twitter:card" content="summary">
+
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<link rel="stylesheet" href="assets/site.css">
+
+<script>
+  /* Same pre-paint theme resolution as the landing page. */
+  (function () {
+    document.documentElement.classList.add("js");
+    var stored = null;
+    try { stored = localStorage.getItem("vigilant-core-theme"); } catch (e) {}
+    if (stored !== "light" && stored !== "dark") {
+      stored = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+    }
+    document.documentElement.setAttribute("data-theme", stored);
+  })();
+</script>
+</head>
+
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header" data-header>
+  <div class="container site-header__inner">
+    <a class="brand" href="./">
+      <span class="brand__mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <path d="M9.3 7.7a6 6 0 0 0 0 8.6"/>
+          <path d="M6.3 5.3a9.5 9.5 0 0 0 0 13.4"/>
+          <path d="M14.7 7.7a6 6 0 0 1 0 8.6"/>
+          <path d="M17.7 5.3a9.5 9.5 0 0 1 0 13.4"/>
+          <circle cx="12" cy="12" r="2.15" fill="currentColor" stroke="none"/>
+        </svg>
+      </span>
+      vigilant-core
+    </a>
+
+    <nav class="site-nav" aria-label="Sections">
+      <a href="./">Home</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.2"/>
+          <path d="M12 2.5v2.2M12 19.3v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/>
+        </svg>
+      </button>
+      <a class="button button--ghost" href="privacy-policy.md">View as Markdown</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <div class="container">
+    <article class="prose" style="padding-block: clamp(2.5rem, 6vw, 4rem) 3rem">
+      <!-- The policy body is generated from docs/privacy-policy.md by
+           scripts/build-site.sh. Edit the Markdown, never this placeholder. -->
+      <!-- vigilant-core:policy -->
+    </article>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__inner">
+      <div>
+        <a class="brand" href="./">
+          <span class="brand__mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+              <path d="M9.3 7.7a6 6 0 0 0 0 8.6"/>
+              <path d="M6.3 5.3a9.5 9.5 0 0 0 0 13.4"/>
+              <path d="M14.7 7.7a6 6 0 0 1 0 8.6"/>
+              <path d="M17.7 5.3a9.5 9.5 0 0 1 0 13.4"/>
+              <circle cx="12" cy="12" r="2.15" fill="currentColor" stroke="none"/>
+            </svg>
+          </span>
+          vigilant-core
+        </a>
+        <p class="site-footer__note">
+          This page is generated from
+          <a href="https://gitlab.com/ranjithraj/vigilant-core/-/blob/main/docs/privacy-policy.md" rel="noopener">docs/privacy-policy.md</a>
+          in the project repository. Edit the Markdown there, not this page.
+        </p>
+      </div>
+
+      <ul class="site-footer__links">
+        <li><a href="./">Home</a></li>
+        <li><a href="https://gitlab.com/ranjithraj/vigilant-core" rel="noopener">Source</a></li>
+        <li><a href="https://gitlab.com/ranjithraj/vigilant-core/-/issues" rel="noopener">Issues</a></li>
+        <li><a href="https://gitlab.com/ranjithraj/vigilant-core/-/blob/main/LICENSE" rel="noopener">Licence</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/site.js" defer></script>
+</body>
+</html>

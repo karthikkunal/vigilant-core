@@ -1,0 +1,10 @@
+# Copy to key.properties and fill in, or generate both with:
+#   scripts/gen-keystore.sh
+#
+# key.properties is gitignored — never commit it or the keystore.
+# Paths are resolved relative to app/android/.
+
+storePassword=changeit
+keyPassword=changeit
+keyAlias=vigilant-core
+storeFile=vigilant-core-release.jks

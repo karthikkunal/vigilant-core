@@ -1,0 +1,92 @@
+# Dart / Flutter
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+coverage/
+.fvm/
+
+# pubspec.lock is deliberately NOT ignored. The F-Droid recipe runs
+# `flutter pub get --enforce-lockfile`, which fails if a lockfile is resolved
+# fresh instead of honoured. Flutter's own template ignores pubspec.lock for
+# apps; this project must not, so the negations below are load-bearing.
+!**/pubspec.lock
+!pubspec.lock
+
+# Flutter
+.flutter-plugins
+.flutter-plugins-dependencies
+**/android/.gradle/
+**/android/local.properties
+**/android/key.properties
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+**/android/captures/
+**/android/.externalNativeBuild/
+**/android/.cxx/
+*.hprof
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/ephemeral/
+**/ios/DerivedData/
+**/ios/build/
+xcuserdata/
+*.xcuserstate
+
+# Store metadata. The image directories are intentionally NOT ignored:
+# F-Droid renders screenshots from fastlane/metadata/**/images/phoneScreenshots
+# directly out of the repository.
+fastlane/report.xml
+fastlane/output/
+fastlane/Preview.html
+**/fastlane/Frameworks/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.directory
+
+# Editor backups
+*~
+*.swp
+*.swo
+.\#*
+\#*\#
+
+# Secrets (never commit signing material or credentials)
+*.jks
+*.keystore
+*.p12
+*.pem
+*.key
+*.mobileprovision
+key.properties
+keystore.properties
+secrets.json
+google-services.json
+.env
+.env.*
+
+# Generated website, including the rendered privacy policy
+# (see scripts/build-site.sh)
+/public/
+
+# Python bytecode from the site's build helpers
+__pycache__/
+*.pyc

@@ -1,0 +1,31 @@
+name: cert_chain
+description: "Captures the TLS certificate chain (leaf + intermediates) a server presents."
+version: 0.1.0
+license: GPL-3.0-or-later
+publish_to: none
+
+environment:
+  sdk: ^3.13.4
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.0.2
+  basic_utils: ^5.8.2
+  discovery_core:
+    path: ../discovery_core
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: dev.karthikkunal.cert_chain
+        pluginClass: CertChainPlugin
+      ios:
+        pluginClass: CertChainPlugin

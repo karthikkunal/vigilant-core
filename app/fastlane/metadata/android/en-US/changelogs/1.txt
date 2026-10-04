@@ -1,0 +1,10 @@
+Initial release.
+
+* Local-first discovery: registration expiry (RDAP), TLS leaf and full chain,
+  DNS and email-authentication records, Certificate Transparency, HTTP and HSTS
+* Real-time paging: foreground service, per-monitor notification channels,
+  sound and vibration, escalation until acknowledged, full-screen alert
+* Acknowledge, Mute 1h and Re-check from the notification
+* Per-monitor settings: cadence, failure threshold, latency budget, sound,
+  vibration and quiet hours
+* Expiry reminders scheduled locally

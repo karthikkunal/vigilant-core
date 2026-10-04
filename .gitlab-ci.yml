@@ -1,0 +1,125 @@
+# GitLab CI for vigilant-core.
+#
+# Two jobs: build the Flutter web bundle, then assemble and publish the site.
+# The site exists for three reasons, and all of them are load-bearing:
+#
+#   1. It is the marketing page for the app.
+#   2. It hosts the privacy policy at a stable public URL, because Google Play
+#      and the App Store both require a reachable policy and verify it before
+#      accepting a build. The policy's source of truth stays
+#      docs/privacy-policy.md; scripts/build-site.sh renders it.
+#   3. It carries the web build at /app/, so there is a live preview of the app
+#      rather than only pictures of it.
+#
+# The Pages runner needs python3 to render the policy and ImageMagick to
+# downscale the store screenshots into the gallery. The two extra packages are
+# not obvious and both were missing on the first run:
+#   libwebp-tools  provides cwebp. Alpine's imagemagick shells out to it to
+#                  encode WebP, so without it every screenshot fails to encode.
+#   librsvg        gives ImageMagick an SVG renderer, needed for the mark on
+#                  the social card and the Apple touch icon.
+# font-dejavu is what the social card is typeset with. All four are small; the
+# job has no other dependency, and in particular no Node toolchain and no
+# package install.
+#
+# Pages is enabled and the site is live at https://vigilant-core-9a0e4f.gitlab.io.
+# It is served at the root of that host, not under a /vigilant-core/ path, because
+# the project has a unique Pages domain; ranjithraj.gitlab.io/vigilant-core/ 308s
+# there. The old namespace path is not what the canonical URLs, the sitemap or
+# the store metadata use, and should not be reintroduced.
+#
+# The project's Pages access level is `enabled` (everyone with access) rather
+# than `public`. gitlab.com rejects `public` for this project — "Pages access
+# level is not allowed for the project visibility level" — and `enabled` on a
+# public project is what makes the site reachable without signing in. Checked
+# with: glab api --hostname gitlab.com projects/<id>/pages
+#
+# Note for a future reader: the Dart and Flutter checks (format, analyze, test,
+# APK build) still run only from the local git hooks, not from here. Wiring those
+# up needs a Flutter runner image and is tracked as a gap in docs/tows.md (W1).
+
+stages:
+  - build
+  - pages
+
+# The Flutter web build, published under /app/ as a live preview of the app.
+#
+# It is a separate job from `pages` on purpose: it needs the Flutter SDK and is
+# a slow build, while `pages` is a few seconds of shell. Keeping them apart
+# means the cheap job stays cheap and a Flutter failure cannot take the
+# marketing page down with it.
+#
+# The SDK is cloned at a pinned tag rather than taken from a container image.
+# ghcr.io/cirruslabs/flutter only publishes floating `stable`/`latest` tags plus
+# versions up to 3.44.0, and its `stable` currently ships Dart 3.12.0, which
+# cannot resolve a project requiring ^3.13.4. Pinning the tag is the only way to
+# say which SDK the bundle was built with; it also means a new Flutter release
+# cannot change the published output without this file changing.
+#
+# The base href has to match where the bundle is actually served, or the loader
+# looks for its assets one directory off and the page renders blank with no
+# error in the console worth reading. This project has a unique Pages domain, so
+# the site is served at the root and the bundle at /app/ -- not under a
+# /vigilant-core/ path, which is the namespace-path shape and does not apply here.
+# SITE_PATH is the single place that is written down; check it with
+# `curl -sI $SITE_URL/assets/site.css` (200) and `$SITE_URL/vigilant-core/assets/site.css` (404).
+web:
+  stage: build
+  image: ubuntu:24.04
+  variables:
+    SITE_PATH: /app/
+    FLUTTER_VERSION: "3.47.5"
+    # Inside the project directory, not /opt: a GitLab cache can only restore
+    # paths under the working copy, so an SDK cloned elsewhere is re-downloaded
+    # in full on every run.
+    FLUTTER_ROOT: "$CI_PROJECT_DIR/.flutter-sdk"
+  cache:
+    key: "flutter-$FLUTTER_VERSION"
+    paths:
+      - .flutter-sdk/
+  before_script:
+    - apt-get update -qq && apt-get install -y -qq --no-install-recommends git curl unzip xz-utils ca-certificates
+    # The first `flutter --version` downloads the Dart SDK that matches the
+    # pinned Flutter tag, so both land in the cache together and neither is
+    # re-fetched on the next run.
+    - if [ ! -x "$FLUTTER_ROOT/bin/flutter" ]; then
+        git clone --depth 1 --branch "$FLUTTER_VERSION" https://github.com/flutter/flutter.git "$FLUTTER_ROOT";
+      fi
+    - export PATH="$FLUTTER_ROOT/bin:$PATH"
+    - flutter --version
+    - flutter config --no-analytics >/dev/null
+  script:
+    - export PATH="$FLUTTER_ROOT/bin:$PATH"
+    - cd app
+    # --pwa-strategy none: the service worker would cache an old bundle against
+    # a Pages path that may move, and a stale cache is worse than no offline
+    # support for a preview.
+    - flutter build web --release --base-href "$SITE_PATH" --pwa-strategy none
+    # The .symbols files are debugger symbol maps no browser fetches, and they
+    # are roughly a third of the tree.
+    - find build/web -name '*.symbols' -delete
+  artifacts:
+    paths:
+      - app/build/web
+    expire_in: 1 day
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  retry: 1
+
+pages:
+  stage: pages
+  image: alpine:latest
+  needs:
+    - job: web
+      artifacts: true
+  script:
+    - apk add --no-cache bash python3 imagemagick libwebp-tools librsvg font-dejavu
+    - ./scripts/build-site.sh public
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  # Pages deployments are idempotent static output; retrying is cheap and a
+  # transient registry failure should not need a manual re-run.
+  retry: 2
