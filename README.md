@@ -40,7 +40,7 @@ for the locked design and [`docs/fdroid.md`](docs/fdroid.md) for packaging.
 ## Website
 
 The project's site is the marketing page, a live web build of the app, and
-the published privacy policy, at <https://vigilant-core-9a0e4f.gitlab.io/>. Two
+the published privacy policy, at <https://karthikkunal.github.io/vigilant-core/app/>. Two
 CI jobs build it from `main`: `web` produces the Flutter web bundle, and
 `pages` assembles the site around it.
 
